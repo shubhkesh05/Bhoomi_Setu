@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chatbot Widget</title>
+  <style>
+    :root{--bg:#f7fafc;--paper:#ffffff;--muted:#6b7280;--accent:#2563eb}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);display:flex;align-items:center;justify-content:center;height:100vh}
+    .widget{width:420px;max-width:96%;background:var(--paper);border-radius:14px;box-shadow:0 10px 30px rgba(16,24,40,0.08);display:flex;flex-direction:column;overflow:hidden}
+    .header{padding:14px 16px;border-bottom:1px solid #eef2f7;display:flex;align-items:center;justify-content:space-between}
+    .title{font-size:16px;font-weight:600}
+    .status{font-size:12px;color:var(--muted)}
+    .messages{padding:12px;flex:1;overflow:auto;background:linear-gradient(180deg,rgba(37,99,235,0.02),transparent)}
+    .msg{display:flex;margin-bottom:10px}
+    .msg .bubble{max-width:78%;padding:10px 12px;border-radius:12px;line-height:1.4}
+    .msg.user{justify-content:flex-end}
+    .msg.user .bubble{background:var(--accent);color:#fff;border-bottom-right-radius:6px}
+    .msg.bot{justify-content:flex-start}
+    .msg.bot .bubble{background:#f1f5f9;color:#0f172a}
+    .meta{font-size:10px;color:var(--muted);margin-top:6px;text-align:right}
+    .input-area{padding:12px;border-top:1px solid #eef2f7;display:flex;gap:8px;align-items:flex-end}
+    .input{flex:1;display:flex;align-items:flex-end}
+    textarea{width:100%;min-height:44px;max-height:140px;padding:10px;border-radius:10px;border:1px solid #e6edf3;font-size:14px;resize:none;font-family:inherit}
+    .actions{display:flex;flex-direction:column;gap:8px}
+    .btn{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:10px;font-weight:600;cursor:pointer}
+    .btn:disabled{opacity:0.6;cursor:not-allowed}
+    .small{font-size:12px;color:var(--muted);}
+    .typing{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+    .dots{width:28px;height:8px;display:inline-flex;gap:4px}
+    .dots span{width:6px;height:6px;background:#cbd5e1;border-radius:999px;display:inline-block;animation:blink 1s infinite}
+    .dots span:nth-child(2){animation-delay:.15s}
+    .dots span:nth-child(3){animation-delay:.3s}
+    @keyframes blink{0%{opacity:0.3}50%{opacity:1}100%{opacity:0.3}}
+    .error{color:#b91c1c;font-size:13px;margin-top:6px}
+    @media (max-width:480px){.widget{width:100%;height:100vh;border-radius:0}}
+  </style>
+</head>
+<body>
+  <main class="widget" aria-label="Chatbot widget">
+    <header class="header">
+      <div>
+        <div class="title">Chat with Support</div>
+        <div class="status">Online • <span id="bot-name">Assistant</span></div>
+      </div>
+      <div class="small">v1.0</div>
+    </header>
+
+    <section id="messages" class="messages" aria-live="polite"></section>
+
+    <div class="input-area">
+      <div class="input">
+        <textarea id="input" placeholder="Type a message — Enter to send, Shift+Enter for newline"></textarea>
+      </div>
+      <div class="actions">
+        <button id="sendBtn" class="btn">Send</button>
+        <div id="statusLine" class="small" aria-hidden="true"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ====== CONFIGURATION ======
+    // Change this to your backend endpoint that accepts POST { message: string }
+    // and returns JSON { reply: string }.
+    const CHAT_API_URL = '/api/chat';
+    const BOT_NAME = 'Assistant';
+    // ===========================
+
+    const messagesEl = document.getElementById('messages');
+    const inputEl = document.getElementById('input');
+    const sendBtn = document.getElementById('sendBtn');
+    const statusLine = document.getElementById('statusLine');
+    document.getElementById('bot-name').textContent = BOT_NAME;
+
+    let isSending = false;
+
+    // initial bot message
+    addBotMessage('Hi — how can I help you today?');
+
+    function addMessage(text, author='bot', time = Date.now()){
+      const wrapper = document.createElement('div');
+      wrapper.className = 'msg ' + (author==='user' ? 'user' : 'bot');
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
+      wrapper.appendChild(bubble);
+
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.textContent = new Date(time).toLocaleTimeString();
+      bubble.appendChild(meta);
+
+      messagesEl.appendChild(wrapper);
+      scrollToBottom();
+      return wrapper;
+    }
+
+    function addUserMessage(text){
+      return addMessage(text, 'user');
+    }
+    function addBotMessage(text){
+      return addMessage(text, 'bot');
+    }
+
+    function setStatus(text){
+      statusLine.textContent = text || '';
+    }
+
+    function showTypingIndicator(){
+      const div = document.createElement('div');
+      div.className = 'msg bot typing-wrapper';
+      div.dataset.typing = 'true';
+      div.innerHTML = '<div class="bubble"><div class="typing"><div class="dots"><span></span><span></span><span></span></div> '+BOT_NAME+' is typing…</div></div>';
+      messagesEl.appendChild(div);
+      scrollToBottom();
+    }
+    function removeTypingIndicator(){
+      const el = messagesEl.querySelector('[data-typing]');
+      if(el) el.remove();
+    }
+
+    function scrollToBottom(){
+      messagesEl.scrollTop = messagesEl.scrollHeight + 100;
+    }
+
+    async function sendMessage(){
+      const text = inputEl.value.trim();
+      if(!text) return;
+      if(isSending) return;
+
+      // add user message immediately
+      addUserMessage(text);
+      inputEl.value = '';
+      setStatus('Sending...');
+      isSending = true;
+      sendBtn.disabled = true;
+      showTypingIndicator();
+
+      try{
+        const res = await fetch(CHAT_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text })
+        });
+
+        if(!res.ok){
+          const t = await res.text();
+          throw new Error('Server error: ' + res.status + ' — ' + t);
+        }
+
+        const data = await res.json();
+        const reply = (data && (data.reply || data.message || data.text)) || '(no reply)';
+        removeTypingIndicator();
+        addBotMessage(reply);
+        setStatus('');
+      }catch(err){
+        console.error(err);
+        removeTypingIndicator();
+        addBotMessage("Sorry — I couldn't complete that request.");
+        setStatus('Error: ' + (err.message||'Unknown'));
+        // add retry element
+        const errEl = document.createElement('div');
+        errEl.className = 'error';
+        errEl.textContent = 'Failed to send. Click to retry.';
+        errEl.style.cursor = 'pointer';
+        errEl.onclick = () => { errEl.remove(); sendMessage(); };
+        messagesEl.appendChild(errEl);
+        scrollToBottom();
+      }finally{
+        isSending = false;
+        sendBtn.disabled = false;
+      }
+    }
+
+    // events
+    sendBtn.addEventListener('click', sendMessage);
+    inputEl.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' && !e.shiftKey){
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // optional: limit pasted content
+    inputEl.addEventListener('input', ()=>{
+      if(inputEl.value.length > 2000) inputEl.value = inputEl.value.slice(0,2000);
+    });
+
+    // programmatic access for embedding pages
+    window.chatbot = {
+      send(text){
+        inputEl.value = text;
+        return sendMessage();
+      },
+      setApiUrl(url){
+        if(url) window.CHAT_API_URL = url;
+      }
+    };
+  </script>
+</body>
+</html>
