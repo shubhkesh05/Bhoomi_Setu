@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mutual Partition Form</title>
+  <link rel="stylesheet" href="mutual-partition.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="form-container">
+   
+
+    <form id="mutualPartitionForm">
+        <h1 class="form-heading">Demarcation Request</h1>
+
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="landNumber">Land Number</label>
+      <input type="text" id="landNumber" name="landNumber" required>
+
+      <label for="khataNumber">Khata Sankhya</label>
+      <input type="text" id="khataNumber" name="khataNumber" required>
+
+      <label for="landArea">Land Area (in hectares)</label>
+      <input type="text" id="landArea" name="landArea" required>
+
+      <label for="aadhaarNumber">Aadhaar Number</label>
+      <input type="text" id="aadhaarNumber" name="aadhaarNumber" pattern="\d{12}" required>
+
+      <label for="mobileNumber">Mobile Number</label>
+      <input type="text" id="mobileNumber" name="mobileNumber" pattern="\d{10}" required>
+
+      <label for="address">Address</label>
+      <textarea id="address" name="address" rows="3" required></textarea>
+
+      
+      <label for="description">Description</label>
+      <textarea id="description" name="description" rows="4" required></textarea>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+  <script>
+  document.getElementById('mutualPartitionForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // stop actual form submission
+
+    // OPTIONAL: You can add validation or save to backend here if needed
+
+    // Redirect to success page
+    window.location.href = "success.html";
+  });
+</script>
+
+</body>
+</html>
