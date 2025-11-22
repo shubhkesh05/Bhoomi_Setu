@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Register | LandResolve</title>
+    <link rel="stylesheet" href="signup.css" />
+</head>
+
+<body>
+    <div class="container">
+        <form id="registerForm" class="form active">
+            <h2>Register</h2>
+
+            <input type="text" placeholder="Full Name" required />
+            <input type="text" placeholder="Username" required />
+            <input type="text" placeholder="Mobile Number" required />
+            <button type="button" onclick="showOTP()">Send OTP</button>
+
+            <div id="otpSection" style="display: none;">
+                <input type="text" placeholder="Enter OTP" required />
+                <input type="password" placeholder="Set Password" required />
+                <input type="password" placeholder="Confirm Password" required />
+                <button type="submit">Register</button>
+            </div>
+
+            <p><a href="login.html">Back to Login</a></p>
+        </form>
+    </div>
+
+    <script>
+        function showOTP() {
+            document.getElementById("otpSection").style.display = "block";
+        }
+
+        document.getElementById("registerForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            // Add actual registration logic here (API call or validation)
+            window.location.href = "dashboard.html";
+        });
+    </script>
+</body>
+
+</html>
