@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | Register | Forgot Password</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+  <div class="container">
+  <!-- Login Form -->
+<form id="loginForm" class="form active">
+  <h2>Login</h2>
+<input id="username" type="text" placeholder="Username" required>
+<input id="password" type="password" placeholder="Password" required>
+
+  <div class="captcha-box">
+    <span id="captchaText"></span>
+    <button type="button" onclick="generateCaptcha()">↻</button>
+  </div>
+  <input id="captchaInput" type="text" placeholder="Enter Captcha" required>
+
+  <button type="submit">Login</button>
+  <p><a href="#" onclick="showForm('forgot')">Forgot Password?</a></p>
+  <p><a href="#" onclick="showForm('register')">New User? Register</a></p>
+</form>
+
+
+    <!-- Forgot Password Step 2 -->
+    <form id="forgotStep2" class="form">
+      <h2>Reset Password</h2>
+      <input type="text" placeholder="Enter OTP" required>
+      <input type="password" placeholder="New Password" required>
+      <input type="password" placeholder="Confirm Password" required>
+      <button type="submit">Reset Password</button>
+      <p><a href="#" onclick="showForm('login')">Back to Login</a></p>
+    </form>
+
+    <!-- Register Form -->
+    <form id="registerForm" class="form">
+      <h2>Register</h2>
+      <input type="text" placeholder="Full Name" required>
+      <input type="text" placeholder="Username" required>
+      <input type="text" placeholder="Mobile Number" required>
+      <button type="button" onclick="showOTP()">Send OTP</button>
+      <div id="otpSection" style="display:none;">
+        <input type="text" placeholder="Enter OTP" required>
+        <input type="password" placeholder="Set Password" required>
+        <input type="password" placeholder="Confirm Password" required>
+        <button type="submit">Register</button>
+      </div>
+      <p><a href="#" onclick="showForm('login')">Back to Login</a></p>
+    </form>
+  </div>
+
+  <script>
+    function showForm(formId) {
+      document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
+      if (formId === 'forgot') {
+        document.getElementById('forgotStep1').classList.add('active');
+      } else if (formId === 'register') {
+        document.getElementById('registerForm').classList.add('active');
+      } else {
+        document.getElementById('loginForm').classList.add('active');
+      }
+    }
+
+    function showOTP() {
+      document.getElementById('otpSection').style.display = 'block';
+    }
+  </script>
+  <script>
+  // Captcha Generator
+  function generateCaptcha() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let captcha = '';
+    for (let i = 0; i < 6; i++) {
+      captcha += chars[Math.floor(Math.random() * chars.length)];
+    }
+    document.getElementById('captchaText').textContent = captcha;
+  }
+
+  // Initial captcha
+  generateCaptcha();
+
+  function showForm(formId) {
+    document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
+    if (formId === 'forgot') {
+      document.getElementById('forgotStep1').classList.add('active');
+    } else if (formId === 'register') {
+      document.getElementById('registerForm').classList.add('active');
+    } else {
+      document.getElementById('loginForm').classList.add('active');
+      generateCaptcha(); // regenerate captcha on return
+    }
+  }
+
+  function showOTP() {
+    document.getElementById('otpSection').style.display = 'block';
+  }
+</script>
+<script>
+  document.getElementById("loginForm").addEventListener("submit", function (e) {
+    e.preventDefault(); // prevent actual submission
+    // (Optional) Add your authentication logic here
+
+    // Redirect to dashboard
+    window.location.href = "dashboard.html";
+  });
+</script>
+
+
+</body>
+</html>
