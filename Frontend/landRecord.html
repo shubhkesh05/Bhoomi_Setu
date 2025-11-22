@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Land Records - LandResolve</title>
+    <link rel="stylesheet" href="styles/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+        .records-container {
+            max-width: 1000px;
+            margin: 60px auto;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 10px;
+            color: #fff;
+        }
+
+        .records-container h2 {
+            text-align: center;
+            color: #00b7ff;
+            margin-bottom: 30px;
+        }
+
+        .record-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+            justify-content: space-between;
+        }
+
+        .record-form select,
+        .record-form input {
+            flex: 1 1 220px;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: #222;
+            color: #fff;
+        }
+
+        .record-form button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .record-form button:hover {
+            background-color: #1e7e34;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+            color: #eee;
+        }
+
+        th {
+            background-color: #0078d4;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="records-container">
+        <h2>Search Your Land Records</h2>
+
+        <form class="record-form">
+            <select>
+                <option>Select State</option>
+                <option>Bihar</option>
+                <option>Uttar Pradesh</option>
+                <option>Madhya Pradesh</option>
+            </select>
+
+            <select>
+                <option>Select District</option>
+                <option>Patna</option>
+                <option>Lucknow</option>
+                <option>Bhopal</option>
+            </select>
+
+            <select>
+                <option>Select Village</option>
+                <option>Koshi</option>
+                <option>Samastipur</option>
+                <option>Gonda</option>
+            </select>
+
+            <input type="text" placeholder="Enter Khata / Khasra No." />
+            <button type="submit">Search</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Owner Name</th>
+                    <th>Khata No.</th>
+                    <th>Area (Acre)</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Ravi Kumar</td>
+                    <td>KH1234</td>
+                    <td>2.5</td>
+                    <td>Dispute Free</td>
+                </tr>
+                <tr>
+                    <td>Sunita Devi</td>
+                    <td>KH7890</td>
+                    <td>1.2</td>
+                    <td>Under Review</td>
+                </tr>
+                <!-- You can add dynamic rows via JS later -->
+            </tbody>
+        </table>
+
+        <!-- <div class="no-results">No matching records found.</div> -->
+    </div>
+</body>
+
+</html>
