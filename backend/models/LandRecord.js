@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-
+// this is the final one
 const landRecordSchema = new mongoose.Schema({
     owner: {
         type: mongoose.Schema.Types.ObjectId,
