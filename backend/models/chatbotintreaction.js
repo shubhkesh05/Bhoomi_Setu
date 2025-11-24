@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-
+// This is the final one
 const chatbotInteractionSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
