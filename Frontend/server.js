@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';  
-
+// this is the final
 const userSchema = new mongoose.Schema({
   aadhaarNumber: { type: String, required: true, unique: true, match: /^\d{12}$/ },
   name: { type: String, required: true, trim: true },
